@@ -35,19 +35,29 @@ export default {
       notification: Object,
       item: Object,
       loaded: false,
-      color: this.loaded ? "#04AA6D" : "#B2BABB",
       
     }
   },
   methods: {
-    showNotification() {
-      var options = {
-            title: this.item.senderName,
-            body: this.item.message,
-            icon: "icon.png",
-          };
-    this.notification = new Notification(this.item.senderName, options);
+
+ displayNotification(item) {
+
+    navigator.serviceWorker.register('sw.js');
+
+    Notification.requestPermission(function(result) {
+    if (result === 'granted') {
+      navigator.serviceWorker.ready.then(function(registration) {
+        registration.showNotification(item.senderName, {
+          title: item.senderName,
+          body: item.message,
+          icon: 'icon.png',
+        });
+      });
     }
+  });
+
+}
+
 },
 
 created(){
@@ -62,7 +72,7 @@ created(){
             this.loaded = true
             this.item = dataFromServer
 
-            this.showNotification()
+            this.displayNotification(dataFromServer)
         }
 
 }
